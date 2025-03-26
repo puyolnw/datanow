@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // ใช้ useNavigate สำหรับการเปลี่ยนเส้นทาง
 import { Box, TextField, Button, Typography, Paper, Alert } from '@mui/material';
+import axios from 'axios'; // เพิ่ม import axios
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -26,31 +27,47 @@ const LoginPage = () => {
     try {
       // ใช้ API URL จาก .env
       const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${apiUrl}/api/login`, {
-        method: 'POST',
+      console.log('API URL:', apiUrl); // แสดง API URL ที่ใช้
+      
+      // ใช้ axios.post แทน fetch
+      const response = await axios.post(`${apiUrl}/login`, {
+        username,
+        password
+      }, {
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+        }
       });
   
-      const data = await response.json();
-  
-      if (response.ok) {
-        console.log('Login successful:', data);
+      // axios จะจัดการ JSON parsing ให้อัตโนมัติ
+      const data = response.data;
       
-        // บันทึก token และ user ลงใน localStorage
-        localStorage.setItem('token', data.token); // เก็บ token
-        localStorage.setItem('user', JSON.stringify(data.user)); // เก็บข้อมูลผู้ใช้
-      
-        // เปลี่ยนเส้นทางไปหน้า Dashboard
-        navigate('/');
-      } else {
-        setError(data.error || 'Login failed. Please try again.');
-      }
+      console.log('Login successful:', data);
+    
+      // บันทึก token และ user ลงใน localStorage
+      localStorage.setItem('token', data.token); // เก็บ token
+      localStorage.setItem('user', JSON.stringify(data.user)); // เก็บข้อมูลผู้ใช้
+    
+      // เปลี่ยนเส้นทางไปหน้า Dashboard
+      navigate('/');
     } catch (err) {
       console.error('Error during login:', err);
-      setError('An error occurred. Please try again later.');
+      
+      // จัดการกับข้อผิดพลาดจาก axios
+      if (axios.isAxiosError(err)) {
+        // ถ้ามีข้อมูล response จาก server
+        if (err.response) {
+          setError(err.response.data.error || 'Login failed. Please try again.');
+        } else if (err.request) {
+          // ถ้าส่งคำขอแล้วแต่ไม่ได้รับการตอบกลับ
+          setError('No response from server. Please check your connection.');
+        } else {
+          // มีข้อผิดพลาดอื่นๆ
+          setError('An error occurred. Please try again later.');
+        }
+      } else {
+        setError('An unexpected error occurred. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }

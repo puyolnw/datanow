@@ -67,7 +67,7 @@ const EditData: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${apiUrl}/data/${id}`);
+        const response = await axios.get(`${apiUrl}/api/data/${id}`);
         const data = response.data;
         
         setFormData({
