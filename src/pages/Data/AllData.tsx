@@ -41,11 +41,9 @@ import {
   Refresh as RefreshIcon,
   Search as SearchIcon,
   Clear as ClearIcon,
-  MoreVert as MoreVertIcon,
   Visibility as ViewIcon,
   FileDownload as ExportIcon,
   CalendarMonth as DateIcon,
-  FilterList as FilterIcon
 } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -86,7 +84,6 @@ const AllData: React.FC = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
   // ดึงข้อมูลสถานะทั้งหมด
   useEffect(() => {
@@ -219,10 +216,6 @@ const AllData: React.FC = () => {
   };
 
   // Handle action menu
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, id: string) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedItemId(id);
-  };
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
@@ -230,10 +223,6 @@ const AllData: React.FC = () => {
   };
 
   // Calculate empty rows to maintain consistent page height
-  const emptyRows = page > 0 
-    ? Math.max(0, (1 + page) * rowsPerPage - filteredData.length) 
-    : 0;
-
   // Slice data for current page
   const currentPageData = filteredData.slice(
     page * rowsPerPage,
