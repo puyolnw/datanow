@@ -215,8 +215,6 @@ const AllData: React.FC = () => {
     setStatusFilter(event.target.value);
   };
 
-  // Handle action menu
-
   const handleCloseMenu = () => {
     setAnchorEl(null);
     setSelectedItemId(null);
